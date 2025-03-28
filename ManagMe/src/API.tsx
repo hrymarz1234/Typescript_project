@@ -1,4 +1,4 @@
-export type Task = {
+export type Story = {
     id: number;
     name: string;
     description: string;
@@ -12,7 +12,7 @@ export type Task = {
     id: number;
     name: string;
     description: string;
-    tasks: Task[];
+    stories: Story[];
   };
 
   class ProjectAPI {
@@ -45,14 +45,36 @@ export type Task = {
         localStorage.setItem(this.storageKey, JSON.stringify(projects));
         return project;
     }
+    getAllStories(): Story[] {
+        const storedProjects = localStorage.getItem(this.storageKey);
+        if (!storedProjects) {
+            return [];
+        }
+    
+        const projects = JSON.parse(storedProjects);
+        const stories: Story[] = [];
+    
+        projects.forEach((project: Project) => {
+            if (project.stories) {
+                stories.push(...project.stories);
+            }
+        });
+    
+        return stories;
+    }
+    
+    getStoryById(id: number): Story | null {
+        const stories = this.getAllStories();
+        return stories.find(story => story.id === id) || null;
+    }
   
-    addTaskToProject(projectName: string, task: Task): Project | null {
+    addStoryToProject(projectName: string, story: Story): Project | null {
         let projects = this.getAllProjects();
         let updatedProject = null;
   
         projects = projects.map(project => {
             if (project.name === projectName) {
-                project.tasks.push(task);
+                project.stories.push(story);
                 updatedProject = { ...project };
             }
             return project;
@@ -63,6 +85,48 @@ export type Task = {
         }
         return updatedProject;
     }
+    removeStoryById(storyId: number): Project | null {
+        let projects = this.getAllProjects();
+        let updatedProject = null;
+    
+        projects = projects.map(project => {
+            const originalStories = project.stories;
+            project.stories = project.stories.filter(story => story.id !== storyId);
+    
+            if (originalStories.length !== project.stories.length) {
+                updatedProject = { ...project };
+            }
+            return project;
+        });
+    
+        if (updatedProject) {
+            localStorage.setItem(this.storageKey, JSON.stringify(projects));
+        }
+        return updatedProject;
+    }
+    editStory(updatedStory: Story): Story | null {
+        let projects = this.getAllProjects();
+        let updatedStoryRef: Story | null = null;
+    
+        projects = projects.map(project => {
+            project.stories = project.stories.map(story => {
+                if (story.id === updatedStory.id) { 
+                    updatedStoryRef = { ...story, ...updatedStory };
+                    return updatedStoryRef;
+                }
+                return story;
+            });
+    
+            return project;
+        });
+    
+        if (updatedStoryRef) {
+            localStorage.setItem(this.storageKey, JSON.stringify(projects));
+        }
+    
+        return updatedStoryRef;
+    }
+    
   
     updateProject(updatedProject: Project): Project | null {
         let projects = this.getAllProjects();

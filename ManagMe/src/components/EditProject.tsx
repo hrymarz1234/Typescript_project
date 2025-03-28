@@ -29,7 +29,7 @@ function EditProject() {
       id: project.id,
       name,
       description,
-      tasks: [],
+      stories: [],
     };
     projectAPI.updateProject(newProject);
     navigate("/");

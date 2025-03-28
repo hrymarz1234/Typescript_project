@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "./../App.css";
-import { Project, Task } from "./../API";
+import { Project, Story } from "./../API";
 import ProjectAPI from "./../API"; 
 import { useNavigate } from "react-router-dom";
 
@@ -13,10 +13,11 @@ function Home() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
-  const [taskName, setTaskName] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
-  const [taskPriority, setTaskPriority] = useState<"low" | "medium" | "high">("medium");
-  const [taskStatus, setTaskStatus] = useState<"todo" | "doing" | "done">("todo");
+  const [currentStory, setCurrentStory] = useState<Story | null>(null);
+  const [taskName, setStoryName] = useState("");
+  const [taskDescription, setStoryDescription] = useState("");
+  const [taskPriority, setStoryPriority] = useState<"low" | "medium" | "high">("medium");
+  const [taskStatus, setStoryStatus] = useState<"todo" | "doing" | "done">("todo");
 
   useEffect(() => {
     setProjects(projectAPI.getAllProjects());
@@ -32,7 +33,16 @@ function Home() {
   function editProject(project: Project) {
     navigate(`/editProject/${project.id}`)
   }
-  
+  function setActiveStory(story: Story) {
+    setCurrentStory(story);
+  }
+  function deleteStory(story: Story) {
+    projectAPI.removeStoryById(story.id);
+    setProjects(projectAPI.getAllProjects());
+  }
+  function editStory(story: Story) {
+    navigate(`/editStory/${story.id}`)
+  }
 
   function createProject() {
     if (!name.trim()) {
@@ -40,17 +50,17 @@ function Home() {
       return;
     }
 
-    const newProject: Project = { id: Date.now(), name, description, tasks: [] };
+    const newProject: Project = { id: Date.now(), name, description, stories: [] };
     projectAPI.addProject(newProject);
     setProjects([...projects, newProject]);
     setName("");
     setDescription("");
   }
 
-  function addTaskToProject() {
+  function addStoryToProject() {
     if (!currentProject) return;
 
-    const newTask: Task = {
+    const newStory: Story = {
       id: Date.now(),
       name: taskName,
       description: taskDescription,
@@ -60,15 +70,15 @@ function Home() {
       createdAt: new Date().toISOString(),
     };
 
-    const updatedProject = projectAPI.addTaskToProject(currentProject.name, newTask);
+    const updatedProject = projectAPI.addStoryToProject(currentProject.name, newStory);
 
     if (updatedProject) {
       setProjects(projectAPI.getAllProjects());
       setCurrentProject(updatedProject);
-      setTaskName("");
-      setTaskDescription("");
-      setTaskPriority("medium");
-      setTaskStatus("todo");
+      setStoryName("");
+      setStoryDescription("");
+      setStoryPriority("medium");
+      setStoryStatus("todo");
     }
   }
   return (
@@ -97,34 +107,36 @@ function Home() {
         <div>
           <h2>Aktualny projekt: {currentProject.name}</h2>
 
-          <h3>Dodaj zadanie</h3>
-          <label>Nazwa zadania:</label>
-          <input type="text" value={taskName} onChange={(e) => setTaskName(e.target.value)} />
-          <label>Opis zadania:</label>
-          <textarea value={taskDescription} onChange={(e) => setTaskDescription(e.target.value)} />
+          <h3>Dodaj Historyjke</h3>
+          <label>Nazwa Historyjki:</label>
+          <input type="text" value={taskName} onChange={(e) => setStoryName(e.target.value)} />
+          <label>Opis Historyjki:</label>
+          <textarea value={taskDescription} onChange={(e) => setStoryDescription(e.target.value)} />
           <label>Priorytet:</label>
-          <select value={taskPriority} onChange={(e) => setTaskPriority(e.target.value as "low" | "medium" | "high")}>
+          <select value={taskPriority} onChange={(e) => setStoryPriority(e.target.value as "low" | "medium" | "high")}>
             <option value="low">Niski</option>
             <option value="medium">Średni</option>
             <option value="high">Wysoki</option>
           </select>
           <label>Status:</label>
-          <select value={taskStatus} onChange={(e) => setTaskStatus(e.target.value as "todo" | "doing" | "done")}>
+          <select value={taskStatus} onChange={(e) => setStoryStatus(e.target.value as "todo" | "doing" | "done")}>
             <option value="todo">Do zrobienia</option>
             <option value="doing">W trakcie</option>
             <option value="done">Zrobione</option>
           </select>
-          <button onClick={addTaskToProject}>Dodaj zadanie</button>
+          <button onClick={addStoryToProject}>Dodaj Historyjke</button>
 
           <h3>Lista zadań:</h3>
-          {currentProject.tasks.length === 0 ? (
+          {currentProject.stories.length === 0 ? (
             <p>Brak zadań</p>
           ) : (
             <ul>
-              {currentProject.tasks.map((task) => (
-                <li key={task.id}>
-                  <strong>{task.name}</strong> - {task.status} - {task.priority}
-                  
+              {currentProject.stories.map((story) => (
+                <li key={story.id}>
+                  <strong>{story.name}</strong> - {story.status} - {story.priority}
+                  <button onClick={() => setActiveStory(story)}>Wybierz</button>
+                  <button className="editbutton" onClick={() => editStory(story)}>Edytuj</button>
+                  <button onClick={() => deleteStory(story)}>Usun</button>
                 </li>
               ))}
             </ul>
