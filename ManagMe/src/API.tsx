@@ -131,7 +131,7 @@ export type Story = {
     updateProject(updatedProject: Project): Project | null {
         let projects = this.getAllProjects();
         let updated = null;
-        projects = projects.map(project => {
+        projects = projects.map(project => { //do zmiany na find 
             if (project.id === updatedProject.id) {
                 updated = { ...project, ...updatedProject };
                 return updated;
