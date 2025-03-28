@@ -22,19 +22,20 @@ export type Task = {
         this.storageKey = storageKey;
     }
   
-    // Pobiera wszystkie projekty
     getAllProjects(): Project[] {
         const projects = localStorage.getItem(this.storageKey);
         return projects ? JSON.parse(projects) : [];
     }
   
-    // Pobiera projekt po nazwie
     getProjectByName(name: string): Project | null {
         const projects = this.getAllProjects();
         return projects.find(project => project.name === name) || null;
     }
-  
-    // Dodaje nowy projekt
+    getProjectById(id: number): Project | null {
+        const projects = this.getAllProjects();
+        return projects.find(project => project.id === id) || null;
+    }
+
     addProject(project: Project): Project {
         const projects = this.getAllProjects();
         if (this.getProjectByName(project.name)) {
@@ -45,7 +46,6 @@ export type Task = {
         return project;
     }
   
-    // Dodaje zadanie do projektu
     addTaskToProject(projectName: string, task: Task): Project | null {
         let projects = this.getAllProjects();
         let updatedProject = null;
@@ -64,7 +64,6 @@ export type Task = {
         return updatedProject;
     }
   
-    // Aktualizuje projekt
     updateProject(updatedProject: Project): Project | null {
         let projects = this.getAllProjects();
         let updated = null;
@@ -81,7 +80,6 @@ export type Task = {
         return updated;
     }
   
-    // Usuwa projekt
     deleteProject(name: string): void {
         let projects = this.getAllProjects();
         projects = projects.filter(project => project.name !== name);
