@@ -129,20 +129,18 @@ export type Story = {
     
   
     updateProject(updatedProject: Project): Project | null {
-        let projects = this.getAllProjects();
-        let updated = null;
-        projects = projects.map(project => { //do zmiany na find 
-            if (project.id === updatedProject.id) {
-                updated = { ...project, ...updatedProject };
-                return updated;
-            }
-            return project;
-        });
-        if (updated) {
-            localStorage.setItem(this.storageKey, JSON.stringify(projects));
-        }
-        return updated;
+    let projects = this.getAllProjects();
+    let updated = null;
+
+    const index = projects.findIndex(project => project.id === updatedProject.id);
+    if (index !== -1) {
+        updated = { ...projects[index], ...updatedProject };
+        projects[index] = updated;
+        localStorage.setItem(this.storageKey, JSON.stringify(projects));
     }
+
+    return updated;
+    }   
   
     deleteProject(name: string): void {
         let projects = this.getAllProjects();
