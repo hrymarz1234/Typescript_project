@@ -3,10 +3,10 @@ import "./../App.css";
 import { Project, Story } from "./../API";
 import ProjectAPI from "./../API"; 
 import { useNavigate } from "react-router-dom";
-
-
+import { useUser } from "./../context/UserContext";
 
 function Home() {
+  const user = useUser();
   const projectAPI = new ProjectAPI();
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -18,6 +18,8 @@ function Home() {
   const [taskDescription, setStoryDescription] = useState("");
   const [taskPriority, setStoryPriority] = useState<"low" | "medium" | "high">("medium");
   const [taskStatus, setStoryStatus] = useState<"todo" | "doing" | "done">("todo");
+  const [filterStatus, setFilterStatus] = useState<"all" | "todo" | "doing" | "done">("all");
+  
 
   useEffect(() => {
     setProjects(projectAPI.getAllProjects());
@@ -84,7 +86,7 @@ function Home() {
   return (
     <div>
       <h1>Zarządzanie projektami</h1>
-
+      <h3>Zalogowany: {user.firstName} {user.lastName}</h3>
       <div>
         <h2>Wybierz projekt</h2>
         {projects.length === 0 ? (
@@ -126,19 +128,31 @@ function Home() {
           </select>
           <button onClick={addStoryToProject}>Dodaj Historyjke</button>
 
+          <div>
+            <label>Filtruj według statusu: </label>
+            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as any)}>
+              <option value="all">Wszystkie</option>
+              <option value="todo">Do zrobienia</option>
+              <option value="doing">W trakcie</option>
+              <option value="done">Zrobione</option>
+            </select>
+          </div>
+
           <h3>Lista zadań:</h3>
           {currentProject.stories.length === 0 ? (
             <p>Brak zadań</p>
           ) : (
             <ul>
-              {currentProject.stories.map((story) => (
-                <li key={story.id}>
-                  <strong>{story.name}</strong> - {story.status} - {story.priority}
-                  <button onClick={() => setActiveStory(story)}>Wybierz</button>
-                  <button className="editbutton" onClick={() => editStory(story)}>Edytuj</button>
-                  <button onClick={() => deleteStory(story)}>Usun</button>
-                </li>
-              ))}
+              {currentProject.stories
+                .filter((story) => filterStatus === "all" || story.status === filterStatus)
+                .map((story) => (
+                  <li key={story.id}>
+                    <strong>{story.name}</strong> - {story.status} - {story.priority}
+                    <button onClick={() => setActiveStory(story)}>Wybierz</button>
+                    <button className="editbutton" onClick={() => editStory(story)}>Edytuj</button>
+                    <button onClick={() => deleteStory(story)}>Usuń</button>
+                  </li>
+                ))}
             </ul>
           )}
         </div>
