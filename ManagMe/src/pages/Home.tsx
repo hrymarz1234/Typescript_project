@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "./../context/UserContext";
 
 function Home() {
-  const user = useUser();
+  const { currentUser, allUsers } = useUser();
   const projectAPI = new ProjectAPI();
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
@@ -83,10 +83,24 @@ function Home() {
       setStoryStatus("todo");
     }
   }
+  
+if (!currentUser || !allUsers) {
+  return <p>Ładowanie danych użytkownika...</p>;
+}
   return (
     <div>
       <h1>Zarządzanie projektami</h1>
-      <h3>Zalogowany: {user.firstName} {user.lastName}</h3>
+      <h3>Zalogowany: {currentUser.firstName} {currentUser.lastName}</h3>
+      <h3>Lista użytkowników:</h3>
+      <ul>
+        {
+          allUsers.map((user)=>(
+            <li key={user.id}>
+              {user.firstName} {user.lastName} - {user.role}
+            </li>
+          
+        ))}
+      </ul>
       <div>
         <h2>Wybierz projekt</h2>
         {projects.length === 0 ? (

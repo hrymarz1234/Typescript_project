@@ -1,19 +1,38 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { UserContext } from "./context/UserContext";
+import { UserContext, User } from "./context/UserContext";
 import Home from "./pages/Home";
 import EditProject from "./components/EditProject";
 import EditStory from "./components/EditStory";
 
-const mockUser = {
-  id: 1,
-  firstName: "Jan",
-  lastName: "Kowalski",
-};
 
 function App() {
+
+  const users: User[] = [
+  {
+    id: 1,
+    firstName: "Jan",
+    lastName: "Kowalski",
+    role: "admin"
+  },
+  {
+    id: 2,
+    firstName: "Adrian",
+    lastName: "Nowak",
+    role: "devops"
+  },
+  {
+    id: 3,
+    firstName: "Sławomir",
+    lastName: "Kluszczyński",
+    role: "developer"
+  }
+];
+
+const currentUser = users.find(u => u.role === "admin")!;
+
   return (
-    <UserContext.Provider value={mockUser}>
+    <UserContext.Provider value={{ currentUser, allUsers: users }}>
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />

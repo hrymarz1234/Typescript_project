@@ -4,13 +4,20 @@ export type User = {
   id: number;
   firstName: string;
   lastName: string;
+  role: "admin" | "devops" | "developer";
 };
 
-const mockUser: User = {
-  id: 1,
-  firstName: "Jan",
-  lastName: "Kowalski",
+type UserContextType = {
+  currentUser: User;
+  allUsers: User[];
 };
 
-export const UserContext = createContext<User>(mockUser);
-export const useUser = () => useContext(UserContext);
+export const UserContext = createContext<UserContextType | undefined>(undefined);
+
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error("useUser must be used within a UserContext.Provider");
+  }
+  return context;
+};
