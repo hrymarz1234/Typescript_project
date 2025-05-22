@@ -6,7 +6,21 @@ export type Story = {
     status: "todo" | "doing" | "done";
     ownerId: number;
     createdAt: string;
+    tasks: Task[];
   };
+  export type Task = {
+    id: number;
+    name: string;
+    description: string;
+    priority: "low" | "medium" | "high";
+    status: "todo" | "doing" | "done";
+    storyId: number;
+    createdAt: string;
+    startedAt?: string;       
+    finishedAt?: string;      
+    assigneeId?: number;      
+    estimatedTime: string;
+    };
   
   export type Project = {
     id: number;
@@ -146,6 +160,13 @@ export type Story = {
         let projects = this.getAllProjects();
         projects = projects.filter(project => project.name !== name);
         localStorage.setItem(this.storageKey, JSON.stringify(projects));
+    }
+    getAllTasksForStory(story: Story): Task[] {
+    return story.tasks || [];
+    }
+    getAllTasksForStoryId(storyId: number): Task[] {
+    const story = this.getStoryById(storyId);
+    return story?.tasks || [];
     }
   }
   

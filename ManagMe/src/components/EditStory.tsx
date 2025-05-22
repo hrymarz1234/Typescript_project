@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Project, Story } from "../API";
+import { Project, Story, Task } from "../API";
 import ProjectAPI from "../API";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -21,6 +21,7 @@ function EditStory() {
   const [status, setStatus] = useState<"todo" | "doing" | "done">(story.status);
   const [ownerId, setOwnerId] = useState(1);
   const [createdAt, setCreatedAt] = useState("");
+  const [tasks, setTasks] = useState<Task[]>(story.tasks || []);
 
 
   function edit(): void {
@@ -39,6 +40,7 @@ function EditStory() {
       status,
       ownerId,
       createdAt,
+      tasks,
     };
     projectAPI.editStory(newStory);
     navigate("/");

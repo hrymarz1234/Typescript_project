@@ -2,6 +2,7 @@ import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserContext, User } from "./context/UserContext";
 import Home from "./pages/Home";
+import Task from './pages/Task';
 import EditProject from "./components/EditProject";
 import EditStory from "./components/EditStory";
 
@@ -38,6 +39,7 @@ const currentUser = users.find(u => u.role === "admin")!;
             <Route path="/" element={<Home />} />
             <Route path="/editProject/:projectId" element={<EditProject />} />
             <Route path="/editStory/:storyId" element={<EditStory />} />
+            <Route path="/task/:storyId" element={<Task />} />
           </Routes>
         </Router>
     </UserContext.Provider>

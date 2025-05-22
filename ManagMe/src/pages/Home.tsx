@@ -14,10 +14,10 @@ function Home() {
   const [description, setDescription] = useState("");
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [currentStory, setCurrentStory] = useState<Story | null>(null);
-  const [taskName, setStoryName] = useState("");
-  const [taskDescription, setStoryDescription] = useState("");
-  const [taskPriority, setStoryPriority] = useState<"low" | "medium" | "high">("medium");
-  const [taskStatus, setStoryStatus] = useState<"todo" | "doing" | "done">("todo");
+  const [storyName, setStoryName] = useState("");
+  const [storyDescription, setStoryDescription] = useState("");
+  const [storyPriority, setStoryPriority] = useState<"low" | "medium" | "high">("medium");
+  const [storyStatus, setStoryStatus] = useState<"todo" | "doing" | "done">("todo");
   const [filterStatus, setFilterStatus] = useState<"all" | "todo" | "doing" | "done">("all");
   
 
@@ -64,12 +64,13 @@ function Home() {
 
     const newStory: Story = {
       id: Date.now(),
-      name: taskName,
-      description: taskDescription,
-      priority: taskPriority,
-      status: taskStatus,
+      name: storyName,
+      description: storyDescription,
+      priority: storyPriority,
+      status: storyStatus,
       ownerId: 1, 
       createdAt: new Date().toISOString(),
+      tasks:[]
     };
 
     const updatedProject = projectAPI.addStoryToProject(currentProject.name, newStory);
@@ -84,9 +85,9 @@ function Home() {
     }
   }
   
-if (!currentUser || !allUsers) {
-  return <p>Ładowanie danych użytkownika...</p>;
-}
+  if (!currentUser || !allUsers) {
+    return <p>Ładowanie danych użytkownika...</p>;
+  }
   return (
     <div>
       <h1>Zarządzanie projektami</h1>
@@ -125,17 +126,17 @@ if (!currentUser || !allUsers) {
 
           <h3>Dodaj Historyjke</h3>
           <label>Nazwa Historyjki:</label>
-          <input type="text" value={taskName} onChange={(e) => setStoryName(e.target.value)} />
+          <input type="text" value={storyName} onChange={(e) => setStoryName(e.target.value)} />
           <label>Opis Historyjki:</label>
-          <textarea value={taskDescription} onChange={(e) => setStoryDescription(e.target.value)} />
+          <textarea value={storyDescription} onChange={(e) => setStoryDescription(e.target.value)} />
           <label>Priorytet:</label>
-          <select value={taskPriority} onChange={(e) => setStoryPriority(e.target.value as "low" | "medium" | "high")}>
+          <select value={storyPriority} onChange={(e) => setStoryPriority(e.target.value as "low" | "medium" | "high")}>
             <option value="low">Niski</option>
             <option value="medium">Średni</option>
             <option value="high">Wysoki</option>
           </select>
           <label>Status:</label>
-          <select value={taskStatus} onChange={(e) => setStoryStatus(e.target.value as "todo" | "doing" | "done")}>
+          <select value={storyStatus} onChange={(e) => setStoryStatus(e.target.value as "todo" | "doing" | "done")}>
             <option value="todo">Do zrobienia</option>
             <option value="doing">W trakcie</option>
             <option value="done">Zrobione</option>
@@ -152,9 +153,9 @@ if (!currentUser || !allUsers) {
             </select>
           </div>
 
-          <h3>Lista zadań:</h3>
+          <h3>Lista historyjek:</h3>
           {currentProject.stories.length === 0 ? (
-            <p>Brak zadań</p>
+            <p>Brak historyjek</p>
           ) : (
             <ul>
               {currentProject.stories
@@ -162,7 +163,7 @@ if (!currentUser || !allUsers) {
                 .map((story) => (
                   <li key={story.id}>
                     <strong>{story.name}</strong> - {story.status} - {story.priority}
-                    <button onClick={() => setActiveStory(story)}>Wybierz</button>
+                    <button className="selectbutton" onClick={() => navigate(`/task/${story.id}`)}>Wybierz</button>
                     <button className="editbutton" onClick={() => editStory(story)}>Edytuj</button>
                     <button onClick={() => deleteStory(story)}>Usuń</button>
                   </li>
