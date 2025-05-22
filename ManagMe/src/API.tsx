@@ -168,6 +168,35 @@ export type Story = {
     const story = this.getStoryById(storyId);
     return story?.tasks || [];
     }
+    addTaskToStory(storyId: number, task: Task): Task | null {
+  const story = this.getStoryById(storyId);
+  if (!story) return null;
+
+  story.tasks.push(task);
+  this.editStory(story);
+  return task;
+}
+
+updateTask(updatedTask: Task): Task | null {
+  const story = this.getStoryById(updatedTask.storyId);
+  if (!story) return null;
+
+  story.tasks = story.tasks.map(task =>
+    task.id === updatedTask.id ? updatedTask : task
+  );
+  this.editStory(story);
+  return updatedTask;
+}
+
+deleteTask(storyId: number, taskId: number): boolean {
+  const story = this.getStoryById(storyId);
+  if (!story) return false;
+
+  const initialLength = story.tasks.length;
+  story.tasks = story.tasks.filter(task => task.id !== taskId);
+  this.editStory(story);
+  return story.tasks.length < initialLength;
+}
   }
   
   export default ProjectAPI;
