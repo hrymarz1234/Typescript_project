@@ -1,9 +1,10 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ProjectAPI from "../API";
 import { Task } from "../API"; 
 
 const TaskDetails = () => {
+  const navigate = useNavigate();
   const { storyId, taskId } = useParams();
   const [task, setTask] = useState<Task | null>(null);
   const api = new ProjectAPI();
@@ -30,7 +31,7 @@ const TaskDetails = () => {
     if (!task) return;
     const updated = {
       ...task,
-      status: "doing" as const,
+      status: "done" as const,
       finishedAt: new Date().toISOString()
     };
     api.updateTask(updated);
@@ -49,6 +50,7 @@ const TaskDetails = () => {
       <p>Osoba: {task.assigneeId ?? "Nieprzypisana"}</p>
       <button onClick={() => handleAssign(2)}>Przypisz osobę (id=2)</button>
       <button onClick={markAsDone}>Oznacz jako zakończone</button>
+      <button onClick={() => navigate(`/kanban/${storyId}`)}>Zobacz Kanban</button>
     </div>
   );
 };

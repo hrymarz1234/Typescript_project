@@ -168,14 +168,19 @@ export type Story = {
     const story = this.getStoryById(storyId);
     return story?.tasks || [];
     }
+    
     addTaskToStory(storyId: number, task: Task): Task | null {
-  const story = this.getStoryById(storyId);
-  if (!story) return null;
+    const story = this.getStoryById(storyId);
+    if (!story) return null;
 
-  story.tasks.push(task);
-  this.editStory(story);
-  return task;
-}
+    if (!story.tasks) {
+        story.tasks = [];
+    }
+
+    story.tasks.push(task);
+    this.editStory(story);
+    return task;
+    }
 
 updateTask(updatedTask: Task): Task | null {
   const story = this.getStoryById(updatedTask.storyId);

@@ -1,10 +1,12 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ProjectAPI, { Story } from "../API";
+import { useNavigate } from "react-router-dom";
 
 const api = new ProjectAPI();
 
 const Task = () => {
+  const navigate = useNavigate();
   const { storyId } = useParams();
   const [story, setStory] = useState<Story | null>(null);
   const [newTaskName, setNewTaskName] = useState("");
@@ -20,8 +22,9 @@ const Task = () => {
     }
   }, [storyId]);
 
-  const handleAddTask = () => {
-  if (!story) return;
+  const handleAddTask = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!story) return;
 
   const newTask = {
     id: Date.now(), 
@@ -36,9 +39,12 @@ const Task = () => {
     finishedAt: "",
     createdAt: new Date().toISOString(),
   };
-
+ 
   api.addTaskToStory(story.id, newTask); 
   setStory(api.getStoryById(story.id)); 
+
+  console.log("Dodano zadanie:", newTask);
+  console.log("Aktualna historia:", api.getStoryById(story.id));
 
   
   setNewTaskName("");
@@ -46,6 +52,12 @@ const Task = () => {
   setNewTaskPriority("medium");
   setNewTaskEstimatedTime("");
 };
+ const handleDeleteTask = (taskId: number) => {
+  if (!story) return;
+  api.deleteTask(story.id, taskId); 
+  setStory(api.getStoryById(story.id)); 
+};
+
 
   return (
   <div style={{ padding: "2rem" }}>
@@ -63,6 +75,10 @@ const Task = () => {
             {story.tasks.map(task => (
               <li key={task.id}>
                 <strong>{task.name}</strong> - {task.status} - {task.priority}
+                <button onClick={() => handleDeleteTask(task.id)}>Usuń</button>
+                <button onClick={() => navigate(`/tasks/${story.id}/${task.id}`)}>
+                  Szczegóły
+                </button>
               </li>
             ))}
           </ul>

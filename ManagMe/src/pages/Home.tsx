@@ -91,7 +91,6 @@ function Home() {
   return (
     <div>
       <h1>Zarządzanie projektami</h1>
-      <h3>Zalogowany: {currentUser.firstName} {currentUser.lastName}</h3>
       <h3>Lista użytkowników:</h3>
       <ul>
         {
