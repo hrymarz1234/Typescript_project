@@ -1,14 +1,14 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import ProjectAPI from "../API";
-import { Task } from "../API"; 
+import ProjectAPI, { Task } from "../API";
+import { useUser } from "../context/UserContext"; 
 
 const TaskDetails = () => {
   const navigate = useNavigate();
   const { storyId, taskId } = useParams();
   const [task, setTask] = useState<Task | null>(null);
   const api = new ProjectAPI();
-
+  const { allUsers } = useUser(); 
   useEffect(() => {
     const story = api.getStoryById(Number(storyId));
     const found = story?.tasks.find(t => t.id === Number(taskId)) || null;
@@ -40,6 +40,12 @@ const TaskDetails = () => {
 
   if (!task) return <p>Nie znaleziono zadania</p>;
 
+  const eligibleUsers = allUsers.filter(
+    u => u.role === "developer" || u.role === "devops"
+  );
+
+  const assignee = allUsers.find(u => u.id === task.assigneeId);
+
   return (
     <div>
       <h2>{task.name}</h2>
@@ -47,10 +53,32 @@ const TaskDetails = () => {
       <p>Status: {task.status}</p>
       <p>Start: {task.startedAt || "Nie rozpoczęto"}</p>
       <p>Koniec: {task.finishedAt || "Nie zakończono"}</p>
-      <p>Osoba: {task.assigneeId ?? "Nieprzypisana"}</p>
-      <button onClick={() => handleAssign(2)}>Przypisz osobę (id=2)</button>
-      <button onClick={markAsDone}>Oznacz jako zakończone</button>
-      <button onClick={() => navigate(`/kanban/${storyId}`)}>Zobacz Kanban</button>
+      <p>
+        Osoba:{" "}
+        {assignee
+          ? `${assignee.firstName} ${assignee.lastName}`
+          : "Nieprzypisana"}
+      </p>
+
+      <label>
+        Przypisz osobę:
+        <select
+          value={task.assigneeId ?? ""}
+          onChange={e => handleAssign(Number(e.target.value))}
+        >
+          <option value="">-- Wybierz osobę --</option>
+          {eligibleUsers.map(user => (
+            <option key={user.id} value={user.id}>
+              {user.firstName} {user.lastName} ({user.role})
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <div style={{ marginTop: "1rem" }}>
+        <button onClick={markAsDone}>Oznacz jako zakończone</button>
+        <button onClick={() => navigate(`/kanban/${storyId}`)}>Zobacz Kanban</button>
+      </div>
     </div>
   );
 };
