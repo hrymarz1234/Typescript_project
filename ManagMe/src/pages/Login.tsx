@@ -1,14 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 function Login() {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3000/login", {
+      const res = await fetch("http://localhost:4000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ login, password }),
@@ -20,6 +23,8 @@ function Login() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("refreshToken", data.refreshToken);
       alert("Zalogowano!");
+
+      navigate("/home");
 
     } catch (err) {
       alert("Błąd logowania");

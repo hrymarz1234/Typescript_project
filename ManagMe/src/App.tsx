@@ -14,24 +14,30 @@ import Login from "./pages/Login";
 
 function App() {
 
-  const users: User[] = [
+const users: User[] = [
   {
     id: 1,
     firstName: "Jan",
     lastName: "Kowalski",
-    role: "admin"
+    role: "admin",
+    login: "admin",
+    password: "admin123"
   },
   {
     id: 2,
     firstName: "Adrian",
     lastName: "Nowak",
-    role: "devops"
+    role: "devops",
+    login: "adrian",
+    password: "nowak123"
   },
   {
     id: 3,
     firstName: "Sławomir",
     lastName: "Kluszczyński",
-    role: "developer"
+    role: "developer",
+    login: "slawek",
+    password: "dev123"
   }
 ];
 
@@ -42,9 +48,9 @@ const currentUser = users.find(u => u.role === "admin")!;
         <Router>
           <Routes>
             <Route element={<Layout />}>
-              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Home />} />
               <Route path="/editProject/:projectId" element={<EditProject />} />
               <Route path="/editStory/:storyId" element={<EditStory />} />
               <Route path="/task/:storyId" element={<Task />} />
