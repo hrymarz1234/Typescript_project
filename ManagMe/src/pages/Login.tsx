@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useUser } from "../context/UserContext";
 
 function Login() {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const { setCurrentUser } = useUser();
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -20,8 +21,13 @@ function Login() {
       if (!res.ok) throw new Error("Błędne dane logowania");
 
       const data = await res.json();
+
       localStorage.setItem("token", data.token);
       localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      setCurrentUser(data.user);
+      localStorage.setItem("user", JSON.stringify(data.user));
       alert("Zalogowano!");
 
       navigate("/home");

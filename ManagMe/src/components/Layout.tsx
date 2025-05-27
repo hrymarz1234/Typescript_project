@@ -6,8 +6,12 @@ const Layout = () => {
 
   return (
     <div>
-      <header style={{ backgroundColor: "none", padding: "1rem" }}>
-        Zalogowany: {currentUser.firstName} {currentUser.lastName}
+      <header style={{ padding: "1rem" }}>
+        {currentUser ? (
+          <>Zalogowany: {currentUser.firstName} {currentUser.lastName}</>
+        ) : (
+          <>Nie zalogowano</>
+        )}
       </header>
       <main>
         <Outlet />

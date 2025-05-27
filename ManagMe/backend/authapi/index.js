@@ -31,15 +31,21 @@ function generateRefreshToken(user) {
 
 
 app.post('/login', (req, res) => {
-  const { login, password } = req.body
-  const user = users.find(u => u.login === login && u.password === password)
-  if (!user) return res.status(401).send('Nieprawidłowy login lub hasło')
+  const { login, password } = req.body;
+  const user = users.find(u => u.login === login && u.password === password);
+  if (!user) return res.status(401).send('Nieprawidłowy login lub hasło');
 
-  const accessToken = generateAccessToken(user)
-  const refreshToken = generateRefreshToken(user)
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
 
-  res.json({ token: accessToken, refreshToken })
-})
+  const { password: _, ...userWithoutPassword } = user;
+
+  res.json({ 
+    token: accessToken, 
+    refreshToken,
+    user: userWithoutPassword
+  });
+});
 
 
 app.post('/refresh-token', (req, res) => {

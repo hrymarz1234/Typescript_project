@@ -10,55 +10,36 @@ import KanbanPage from "./components/KanbanPage";
 import Layout from "./components/Layout"; 
 import Dashboard from "./components/Dashboard";
 import Login from "./pages/Login";
+import { useEffect, useState } from "react";
 
 
 function App() {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
 
-const users: User[] = [
-  {
-    id: 1,
-    firstName: "Jan",
-    lastName: "Kowalski",
-    role: "admin",
-    login: "admin",
-    password: "admin123"
-  },
-  {
-    id: 2,
-    firstName: "Adrian",
-    lastName: "Nowak",
-    role: "devops",
-    login: "adrian",
-    password: "nowak123"
-  },
-  {
-    id: 3,
-    firstName: "Sławomir",
-    lastName: "Kluszczyński",
-    role: "developer",
-    login: "slawek",
-    password: "dev123"
+  useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    setCurrentUser(JSON.parse(storedUser));
   }
-];
-
-const currentUser = users.find(u => u.role === "admin")!;
+}, []);
 
   return (
-    <UserContext.Provider value={{ currentUser, allUsers: users }}>
-        <Router>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Login />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/editProject/:projectId" element={<EditProject />} />
-              <Route path="/editStory/:storyId" element={<EditStory />} />
-              <Route path="/task/:storyId" element={<Task />} />
-              <Route path="/tasks/:storyId/:taskId" element={<TaskDetails />} />
-              <Route path="/kanban/:storyId" element={<KanbanPage />} />
-            </Route>
-          </Routes>
-        </Router>
+    <UserContext.Provider value={{ currentUser, setCurrentUser, allUsers }}>
+      <Router>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Login />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/editProject/:projectId" element={<EditProject />} />
+            <Route path="/editStory/:storyId" element={<EditStory />} />
+            <Route path="/task/:storyId" element={<Task />} />
+            <Route path="/tasks/:storyId/:taskId" element={<TaskDetails />} />
+            <Route path="/kanban/:storyId" element={<KanbanPage />} />
+          </Route>
+        </Routes>
+      </Router>
     </UserContext.Provider>
   );
 }

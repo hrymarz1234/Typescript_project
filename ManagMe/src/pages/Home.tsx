@@ -88,101 +88,114 @@ function Home() {
   if (!currentUser || !allUsers) {
     return <p>Ładowanie danych użytkownika...</p>;
   }
-  return (
-    <div>
-      <h1>Zarządzanie projektami</h1>
-      <h3>Lista użytkowników:</h3>
-      <ul>
-        {
-          allUsers.map((user)=>(
+return (
+  <div>
+    <h1>Zarządzanie projektami</h1>
+
+    {!currentProject && (
+      <>
+        <h3>Lista użytkowników:</h3>
+        <ul>
+          {allUsers.map((user) => (
             <li key={user.id}>
               {user.firstName} {user.lastName} - {user.role}
             </li>
-          
-        ))}
-      </ul>
-      <div>
-        <h2>Wybierz projekt</h2>
-        {projects.length === 0 ? (
-          <p>Brak projektów</p>
-        ) : (
-          <ul>
-            {projects.map((project) => (
-              <li key={project.id}>
-                <strong>{project.name}</strong>: {project.description}
-                <button onClick={() => setActiveProject(project)}>Wybierz</button>
-                <button className="editbutton" onClick={() => editProject(project)}>Edytuj</button>
-                <button onClick={() => deleteProject(project)}>Usun</button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+          ))}
+        </ul>
 
-      {currentProject && (
         <div>
-          <h2>Aktualny projekt: {currentProject.name}</h2>
+          <h2>Wybierz projekt</h2>
+          {projects.length === 0 ? (
+            <p>Brak projektów</p>
+          ) : (
+            <ul>
+              {projects.map((project) => (
+                <li key={project.id}>
+                  <strong>{project.name}</strong>: {project.description}
+                  <button onClick={() => setActiveProject(project)}>Wybierz</button>
+                  <button className="editbutton" onClick={() => editProject(project)}>Edytuj</button>
+                  <button onClick={() => deleteProject(project)}>Usuń</button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
-          <h3>Dodaj Historyjke</h3>
-          <label>Nazwa Historyjki:</label>
-          <input type="text" value={storyName} onChange={(e) => setStoryName(e.target.value)} />
-          <label>Opis Historyjki:</label>
-          <textarea value={storyDescription} onChange={(e) => setStoryDescription(e.target.value)} />
-          <label>Priorytet:</label>
-          <select value={storyPriority} onChange={(e) => setStoryPriority(e.target.value as "low" | "medium" | "high")}>
-            <option value="low">Niski</option>
-            <option value="medium">Średni</option>
-            <option value="high">Wysoki</option>
-          </select>
-          <label>Status:</label>
-          <select value={storyStatus} onChange={(e) => setStoryStatus(e.target.value as "todo" | "doing" | "done")}>
+        <div>
+          <h2>Dodaj projekt</h2>
+          <label>Nazwa:</label>
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+          <label>Opis:</label>
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+          <button onClick={createProject}>Utwórz projekt</button>
+        </div>
+      </>
+    )}
+
+    {currentProject && (
+      <div>
+        <h2>Aktualny projekt: {currentProject.name}</h2>
+
+        <h3>Dodaj Historyjke</h3>
+        <label>Nazwa Historyjki:</label>
+        <input type="text" value={storyName} onChange={(e) => setStoryName(e.target.value)} />
+        <label>Opis Historyjki:</label>
+        <textarea value={storyDescription} onChange={(e) => setStoryDescription(e.target.value)} />
+        <label>Priorytet:</label>
+        <select
+          value={storyPriority}
+          onChange={(e) => setStoryPriority(e.target.value as "low" | "medium" | "high")}
+        >
+          <option value="low">Niski</option>
+          <option value="medium">Średni</option>
+          <option value="high">Wysoki</option>
+        </select>
+        <label>Status:</label>
+        <select
+          value={storyStatus}
+          onChange={(e) => setStoryStatus(e.target.value as "todo" | "doing" | "done")}
+        >
+          <option value="todo">Do zrobienia</option>
+          <option value="doing">W trakcie</option>
+          <option value="done">Zrobione</option>
+        </select>
+        <button onClick={addStoryToProject}>Dodaj Historyjke</button>
+
+        <div>
+          <label>Filtruj według statusu: </label>
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as any)}>
+            <option value="all">Wszystkie</option>
             <option value="todo">Do zrobienia</option>
             <option value="doing">W trakcie</option>
             <option value="done">Zrobione</option>
           </select>
-          <button onClick={addStoryToProject}>Dodaj Historyjke</button>
-
-          <div>
-            <label>Filtruj według statusu: </label>
-            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as any)}>
-              <option value="all">Wszystkie</option>
-              <option value="todo">Do zrobienia</option>
-              <option value="doing">W trakcie</option>
-              <option value="done">Zrobione</option>
-            </select>
-          </div>
-
-          <h3>Lista historyjek:</h3>
-          {currentProject.stories.length === 0 ? (
-            <p>Brak historyjek</p>
-          ) : (
-            <ul>
-              {currentProject.stories
-                .filter((story) => filterStatus === "all" || story.status === filterStatus)
-                .map((story) => (
-                  <li key={story.id}>
-                    <strong>{story.name}</strong> - {story.status} - {story.priority}
-                    <button className="selectbutton" onClick={() => navigate(`/task/${story.id}`)}>Wybierz</button>
-                    <button className="editbutton" onClick={() => editStory(story)}>Edytuj</button>
-                    <button onClick={() => deleteStory(story)}>Usuń</button>
-                  </li>
-                ))}
-            </ul>
-          )}
         </div>
-      )}
 
-      <div>
-        <h2>Dodaj projekt</h2>
-        <label>Nazwa:</label>
-        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-        <label>Opis:</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
-        <p></p>
-        <button onClick={createProject}>Utwórz projekt</button>
+        <h3>Lista historyjek:</h3>
+        {currentProject.stories.length === 0 ? (
+          <p>Brak historyjek</p>
+        ) : (
+          <ul>
+            {currentProject.stories
+              .filter((story) => filterStatus === "all" || story.status === filterStatus)
+              .map((story) => (
+                <li key={story.id}>
+                  <strong>{story.name}</strong> - {story.status} - {story.priority}
+                  <button className="selectbutton" onClick={() => navigate(`/task/${story.id}`)}>
+                    Wybierz
+                  </button>
+                  <button className="editbutton" onClick={() => editStory(story)}>
+                    Edytuj
+                  </button>
+                  <button onClick={() => deleteStory(story)}>Usuń</button>
+                </li>
+              ))}
+          </ul>
+        )}
       </div>
-    </div>
-  );
+    )}
+  </div>
+);
 }
 
 export default Home;
