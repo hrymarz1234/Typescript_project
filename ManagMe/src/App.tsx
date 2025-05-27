@@ -8,6 +8,8 @@ import EditStory from "./components/EditStory";
 import TaskDetails from "./components/TaskDetails";
 import KanbanPage from "./components/KanbanPage";
 import Layout from "./components/Layout"; 
+import Dashboard from "./components/Dashboard";
+import Login from "./pages/Login";
 
 
 function App() {
@@ -40,6 +42,8 @@ const currentUser = users.find(u => u.role === "admin")!;
         <Router>
           <Routes>
             <Route element={<Layout />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/" element={<Home />} />
               <Route path="/editProject/:projectId" element={<EditProject />} />
               <Route path="/editStory/:storyId" element={<EditStory />} />
