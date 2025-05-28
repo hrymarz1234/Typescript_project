@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import "./../App.css";
 import { Project, Story } from "./../API";
-import ProjectAPI from "./../API"; 
+import ProjectAPI from "./../API";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "./../context/UserContext";
+import { AlUsers, useUser } from "./../context/UserContext";
 
 function Home() {
+  const alUsers = new AlUsers().getAllUsers();
   const { currentUser, allUsers } = useUser();
   const projectAPI = new ProjectAPI();
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ function Home() {
     setProjects(projectAPI.getAllProjects());
   }, []);
 
-  if (!currentUser || !allUsers) {
+  if (!currentUser || !alUsers) {
     return <p>Ładowanie danych użytkownika...</p>;
   }
 
@@ -50,6 +51,10 @@ function Home() {
     if (!currentUser || currentUser.role === "guest") return;
     projectAPI.removeStoryById(story.id);
     setProjects(projectAPI.getAllProjects());
+    const matched = projects.find(p => p.id === currentProject?.id);
+    if (matched) {
+      setCurrentProject(matched);
+    }
   }
 
   function editStory(story: Story) {
@@ -102,7 +107,7 @@ function Home() {
         <>
           <h3>Lista użytkowników:</h3>
           <ul>
-            {allUsers.map((user) => (
+            {alUsers.map((user) => (
               <li key={user.id}>
                 {user.firstName} {user.lastName} - {user.role}
               </li>

@@ -7,7 +7,7 @@ import { useUser } from "../context/UserContext";
 function EditStory() {
   const projectAPI = new ProjectAPI();
   const { storyId } = useParams();
-   const { currentUser } = useUser();
+  const { currentUser } = useUser();
   const navigate = useNavigate();
 
    if (!currentUser || currentUser.role === "guest") {

@@ -81,7 +81,7 @@ const Task = () => {
             {story.tasks.map(task => (
               <li key={task.id}>
                 <strong>{task.name}</strong> - {task.status} - {task.priority}
-                <button onClick={() => handleDeleteTask(task.id)}>Usuń</button>
+                {currentUser?.role!=="guest" && <button onClick={() => handleDeleteTask(task.id)}>Usuń</button>}
                 <button onClick={() => navigate(`/tasks/${story.id}/${task.id}`)}>
                   Szczegóły
                 </button>

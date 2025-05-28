@@ -1,9 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ProjectAPI, { Task } from "../API";
-import { useUser } from "../context/UserContext";
+import { AlUsers, useUser } from "../context/UserContext";
 
 const TaskDetails = () => {
+  const alUsers = new AlUsers().getAllUsers();
   const navigate = useNavigate();
   const { storyId, taskId } = useParams();
   const [task, setTask] = useState<Task | null>(null);
@@ -41,11 +42,11 @@ const TaskDetails = () => {
 
   if (!task) return <p>Nie znaleziono zadania</p>;
 
-  const eligibleUsers = allUsers.filter(
+  const eligibleUsers = alUsers.filter(
     u => u.role === "developer" || u.role === "devops"
   );
 
-  const assignee = allUsers.find(u => u.id === task.assigneeId);
+  const assignee = alUsers.find(u => u.id === task.assigneeId);
 
   return (
     <div>
