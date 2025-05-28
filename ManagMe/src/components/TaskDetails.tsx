@@ -4,7 +4,7 @@ import ProjectAPI, { Task } from "../API";
 import { AlUsers, useUser } from "../context/UserContext";
 
 const TaskDetails = () => {
-  const alUsers = new AlUsers().getAllUsers(); // ← ZOSTAJE
+  const alUsers = new AlUsers().getAllUsers(); 
   const navigate = useNavigate();
   const { storyId, taskId } = useParams();
   const [task, setTask] = useState<Task | null>(null);

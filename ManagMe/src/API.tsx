@@ -202,6 +202,19 @@ deleteTask(storyId: number, taskId: number): boolean {
   this.editStory(story);
   return story.tasks.length < initialLength;
 }
-  }
+editTaskInStory(storyId: number, taskId: number, updatedFields: Partial<Task>): Task | null {
+  const story = this.getStoryById(storyId);
+  if (!story) return null;
+
+  const taskIndex = story.tasks.findIndex(task => task.id === taskId);
+  if (taskIndex === -1) return null;
+
+  const updatedTask = { ...story.tasks[taskIndex], ...updatedFields };
+  story.tasks[taskIndex] = updatedTask;
+
+  this.editStory(story);
+  return updatedTask;
+}
+}
   
   export default ProjectAPI;

@@ -17,7 +17,7 @@ function Login() {
   useEffect(() => {
     if (window.google) {
       window.google.accounts.id.initialize({
-        client_id: "",
+        client_id: "757068878985-oupibq3m5iem8ropgdgas6dgc2t1isos.apps.googleusercontent.com",
         callback: handleGoogleResponse,
       });
 

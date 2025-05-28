@@ -11,6 +11,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./components/Dashboard";
 import Login from "./pages/Login";
 import { useEffect, useState } from "react";
+import EditTask from "./components/EditTask";
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
             <Route path="/task/:storyId" element={<Task />} />
             <Route path="/tasks/:storyId/:taskId" element={<TaskDetails />} />
             <Route path="/kanban/:storyId" element={<KanbanPage />} />
+            <Route path="/edit-task/:storyId/:taskId" element={<EditTask />} />
           </Route>
         </Routes>
       </Router>

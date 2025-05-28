@@ -56,7 +56,7 @@ const EditTask = () => {
     }
 
     api.editTaskInStory(Number(storyId), Number(taskId), updatedFields);
-    navigate(`/tasks/${storyId}`);
+    navigate(`/task/${storyId}`);
   };
 
   return (
