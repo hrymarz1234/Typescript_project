@@ -4,12 +4,12 @@ import ProjectAPI, { Task } from "../API";
 import { AlUsers, useUser } from "../context/UserContext";
 
 const TaskDetails = () => {
-  const alUsers = new AlUsers().getAllUsers();
+  const alUsers = new AlUsers().getAllUsers(); // ← ZOSTAJE
   const navigate = useNavigate();
   const { storyId, taskId } = useParams();
   const [task, setTask] = useState<Task | null>(null);
   const api = new ProjectAPI();
-  const { allUsers, currentUser } = useUser();
+  const { currentUser } = useUser();
 
   useEffect(() => {
     const story = api.getStoryById(Number(storyId));
@@ -30,7 +30,7 @@ const TaskDetails = () => {
   };
 
   const markAsDone = () => {
-    if (!task || !currentUser || currentUser.role === "guest") return;
+    if (!task || !currentUser || currentUser.role === "guest" || !task.assigneeId) return;
     const updated = {
       ...task,
       status: "done" as const,
@@ -85,7 +85,13 @@ const TaskDetails = () => {
 
       <div style={{ marginTop: "1rem" }}>
         {currentUser?.role !== "guest" ? (
-          <button onClick={markAsDone}>Oznacz jako zakończone</button>
+          task.assigneeId ? (
+            <button onClick={markAsDone}>Oznacz jako zakończone</button>
+          ) : (
+            <p style={{ color: "gray" }}>
+              Przypisz osobę, aby móc oznaczyć zadanie jako zakończone.
+            </p>
+          )
         ) : (
           <p style={{ color: "gray" }}>
             Użytkownicy goście nie mogą oznaczać zadań jako zakończone.
