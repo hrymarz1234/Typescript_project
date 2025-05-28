@@ -2,11 +2,17 @@ import { useState } from "react";
 import { Project, Story, Task } from "../API";
 import ProjectAPI from "../API";
 import { useNavigate, useParams } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 function EditStory() {
   const projectAPI = new ProjectAPI();
   const { storyId } = useParams();
+   const { currentUser } = useUser();
   const navigate = useNavigate();
+
+   if (!currentUser || currentUser.role === "guest") {
+    return <p>Nie masz uprawnień do edycji tej historyjki.</p>;
+  }
   if (!storyId) {
     return "";
   }

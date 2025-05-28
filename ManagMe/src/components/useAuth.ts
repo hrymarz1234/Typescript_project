@@ -5,6 +5,7 @@ interface User {
   login: string;
   firstName: string;
   lastName: string;
+  role: "admin" | "devops" | "developer" | "guest";
 }
 
 export function useAuth() {
@@ -25,13 +26,10 @@ export function useAuth() {
       });
 
       if (res.status === 401) {
-
         const refreshed = await refreshToken();
         if (refreshed) {
-
           return fetchUser();
         } else {
-
           setUser(null);
           return;
         }

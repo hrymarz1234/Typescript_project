@@ -1,12 +1,19 @@
 import { useState } from "react";
 import { Project } from "../API";
+import { useUser } from "../context/UserContext";
 import ProjectAPI from "../API";
 import { useNavigate, useParams } from "react-router-dom";
 
 function EditProject() {
   const projectAPI = new ProjectAPI();
   const { projectId } = useParams();
+  const { currentUser } = useUser();
   const navigate = useNavigate();
+
+    if (!currentUser || currentUser.role === "guest") {
+    return <p>Nie masz uprawnień do edycji tego projektu.</p>;
+  }
+
   if (!projectId) {
     return "";
   }
