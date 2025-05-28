@@ -43,7 +43,7 @@ function EditStory() {
       tasks,
     };
     projectAPI.editStory(newStory);
-    navigate("/");
+    navigate("/home");
   }
   return (
     <div>

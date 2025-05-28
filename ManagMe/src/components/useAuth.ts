@@ -12,18 +12,29 @@ export function useAuth() {
 
   async function fetchUser() {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      setUser(null);
+      return;
+    }
 
     try {
-      const res = await fetch("http://localhost:3000/me", {
+      const res = await fetch("http://localhost:4000/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       if (res.status === 401) {
-        await refreshToken();
-        return fetchUser(); 
+
+        const refreshed = await refreshToken();
+        if (refreshed) {
+
+          return fetchUser();
+        } else {
+
+          setUser(null);
+          return;
+        }
       }
 
       if (!res.ok) throw new Error("Błąd pobierania użytkownika");
@@ -36,12 +47,12 @@ export function useAuth() {
     }
   }
 
-  async function refreshToken() {
+  async function refreshToken(): Promise<boolean> {
     const refreshToken = localStorage.getItem("refreshToken");
-    if (!refreshToken) return;
+    if (!refreshToken) return false;
 
     try {
-      const res = await fetch("http://localhost:3000/refresh-token", {
+      const res = await fetch("http://localhost:4000/refresh-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refreshToken }),
@@ -52,10 +63,12 @@ export function useAuth() {
       const data = await res.json();
       localStorage.setItem("token", data.token);
       localStorage.setItem("refreshToken", data.refreshToken);
+      return true;
     } catch (err) {
       console.error(err);
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
+      return false;
     }
   }
 

@@ -32,7 +32,7 @@ function EditProject() {
       stories: [],
     };
     projectAPI.updateProject(newProject);
-    navigate("/");
+    navigate("/home");
   }
   return (
     <div>

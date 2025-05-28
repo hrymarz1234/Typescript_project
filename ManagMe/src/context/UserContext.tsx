@@ -4,9 +4,9 @@ export type User = {
   id: number;
   firstName: string;
   lastName: string;
-  role: "admin" | "devops" | "developer";
+  role: "admin" | "devops" | "developer" | "guest";
   login: string;
-  password: string;
+  password?: string;
 };
 
 type UserContextType = {

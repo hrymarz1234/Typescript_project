@@ -17,7 +17,7 @@ function Login() {
   useEffect(() => {
     if (window.google) {
       window.google.accounts.id.initialize({
-        client_id: "xx", 
+        client_id: "",
         callback: handleGoogleResponse,
       });
 
@@ -28,28 +28,33 @@ function Login() {
     }
   }, []);
 
-  const handleGoogleResponse = async (response: any) => {
-    try {
-      const res = await fetch("http://localhost:4000/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ credential: response.credential }),
-      });
+const handleGoogleResponse = async (response: any) => {
+  try {
+    const res = await fetch("http://localhost:4000/auth/google", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ credential: response.credential }),
+    });
 
-      if (!res.ok) throw new Error("Google login failed");
-      const data = await res.json();
+    if (!res.ok) throw new Error("Google login failed");
+    const data = await res.json();
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("refreshToken", data.refreshToken);
+    localStorage.setItem("user", JSON.stringify(data.user));
 
-      setCurrentUser(data.user);
-      alert("Zalogowano przez Google jako gość!");
-      navigate("/home");
-    } catch (err) {
-      alert("Błąd logowania przez Google");
-    }
-  };
+
+    setCurrentUser({
+      ...data.user,
+      id: Number(data.user.id),
+    });
+
+    alert("Zalogowano przez Google jako gość!");
+    navigate("/home");
+  } catch (err) {
+    alert("Błąd logowania przez Google");
+  }
+};
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -69,6 +74,7 @@ function Login() {
       localStorage.setItem("user", JSON.stringify(data.user));
 
       setCurrentUser(data.user);
+
       alert("Zalogowano!");
       navigate("/home");
     } catch (err) {
