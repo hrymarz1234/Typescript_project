@@ -1,14 +1,15 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ProjectAPI, { Task } from "../API";
-import { useUser } from "../context/UserContext"; 
+import { useUser } from "../context/UserContext";
 
 const TaskDetails = () => {
   const navigate = useNavigate();
   const { storyId, taskId } = useParams();
   const [task, setTask] = useState<Task | null>(null);
   const api = new ProjectAPI();
-  const { allUsers } = useUser(); 
+  const { allUsers, currentUser } = useUser();
+
   useEffect(() => {
     const story = api.getStoryById(Number(storyId));
     const found = story?.tasks.find(t => t.id === Number(taskId)) || null;
@@ -16,7 +17,7 @@ const TaskDetails = () => {
   }, [storyId, taskId]);
 
   const handleAssign = (userId: number) => {
-    if (!task) return;
+    if (!task || !currentUser || currentUser.role === "guest") return;
     const updated = {
       ...task,
       assigneeId: userId,
@@ -28,7 +29,7 @@ const TaskDetails = () => {
   };
 
   const markAsDone = () => {
-    if (!task) return;
+    if (!task || !currentUser || currentUser.role === "guest") return;
     const updated = {
       ...task,
       status: "done" as const,
@@ -60,24 +61,38 @@ const TaskDetails = () => {
           : "Nieprzypisana"}
       </p>
 
-      <label>
-        Przypisz osobę:
-        <select
-          value={task.assigneeId ?? ""}
-          onChange={e => handleAssign(Number(e.target.value))}
-        >
-          <option value="">-- Wybierz osobę --</option>
-          {eligibleUsers.map(user => (
-            <option key={user.id} value={user.id}>
-              {user.firstName} {user.lastName} ({user.role})
-            </option>
-          ))}
-        </select>
-      </label>
+      {currentUser?.role !== "guest" ? (
+        <label>
+          Przypisz osobę:
+          <select
+            value={task.assigneeId ?? ""}
+            onChange={e => handleAssign(Number(e.target.value))}
+          >
+            <option value="">-- Wybierz osobę --</option>
+            {eligibleUsers.map(user => (
+              <option key={user.id} value={user.id}>
+                {user.firstName} {user.lastName} ({user.role})
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : (
+        <p style={{ color: "gray" }}>
+          Użytkownicy goście nie mogą przypisywać osób do zadań.
+        </p>
+      )}
 
       <div style={{ marginTop: "1rem" }}>
-        <button onClick={markAsDone}>Oznacz jako zakończone</button>
-        <button onClick={() => navigate(`/kanban/${storyId}`)}>Zobacz Kanban</button>
+        {currentUser?.role !== "guest" ? (
+          <button onClick={markAsDone}>Oznacz jako zakończone</button>
+        ) : (
+          <p style={{ color: "gray" }}>
+            Użytkownicy goście nie mogą oznaczać zadań jako zakończone.
+          </p>
+        )}
+        <button onClick={() => navigate(`/kanban/${storyId}`)}>
+          Zobacz Kanban
+        </button>
       </div>
     </div>
   );

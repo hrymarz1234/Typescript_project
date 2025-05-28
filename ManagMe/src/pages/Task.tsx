@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ProjectAPI, { Story } from "../API";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 const api = new ProjectAPI();
 
@@ -13,6 +14,7 @@ const Task = () => {
   const [newTaskDescription, setNewTaskDescription] = useState("");
   const [newTaskPriority, setNewTaskPriority] = useState<"low" | "medium" | "high">("medium");
   const [newTaskEstimatedTime, setNewTaskEstimatedTime] = useState("");
+  const { currentUser } = useUser();
     
 
   useEffect(() => {
@@ -23,6 +25,10 @@ const Task = () => {
   }, [storyId]);
 
   const handleAddTask = (e: React.FormEvent) => {
+    if (!currentUser || currentUser.role === "guest") {
+  alert("Użytkownicy goście nie mogą dodawać zadań.");
+  return;
+}
     e.preventDefault();
     if (!story) return;
 
@@ -59,7 +65,7 @@ const Task = () => {
 };
 
 
-  return (
+ return (
   <div style={{ padding: "2rem" }}>
     <h1>Witaj na stronie tasków!</h1>
 
@@ -85,36 +91,47 @@ const Task = () => {
         ) : (
           <p>Brak tasków</p>
         )}
-        <h3>Dodaj nowe zadanie</h3>
-        <form onSubmit={handleAddTask}>
-          <input 
-            type="text" 
-            placeholder="Nazwa zadania" 
-            value={newTaskName} 
-            onChange={e => setNewTaskName(e.target.value)} 
-            required 
-          />
-          <textarea
-            placeholder="Opis zadania"
-            value={newTaskDescription}
-            onChange={e => setNewTaskDescription(e.target.value)}
-          />
-          <select 
-            value={newTaskPriority} 
-            onChange={e => setNewTaskPriority(e.target.value as "low" | "medium" | "high")}
-          >
-            <option value="low">Niskie</option>
-            <option value="medium">Średnie</option>
-            <option value="high">Wysokie</option>
-          </select>
-          <input 
-            type="text" 
-            placeholder="Szacowany czas (np. 2h)" 
-            value={newTaskEstimatedTime} 
-            onChange={e => setNewTaskEstimatedTime(e.target.value)} 
-          />
-          <button type="submit">Dodaj zadanie</button>
-        </form>
+
+        {currentUser && currentUser.role !== "guest" && (
+          <>
+            <h3>Dodaj nowe zadanie</h3>
+            <form onSubmit={handleAddTask}>
+              <input 
+                type="text" 
+                placeholder="Nazwa zadania" 
+                value={newTaskName} 
+                onChange={e => setNewTaskName(e.target.value)} 
+                required 
+              />
+              <textarea
+                placeholder="Opis zadania"
+                value={newTaskDescription}
+                onChange={e => setNewTaskDescription(e.target.value)}
+              />
+              <select 
+                value={newTaskPriority} 
+                onChange={e => setNewTaskPriority(e.target.value as "low" | "medium" | "high")}
+              >
+                <option value="low">Niskie</option>
+                <option value="medium">Średnie</option>
+                <option value="high">Wysokie</option>
+              </select>
+              <input 
+                type="text" 
+                placeholder="Szacowany czas (np. 2h)" 
+                value={newTaskEstimatedTime} 
+                onChange={e => setNewTaskEstimatedTime(e.target.value)} 
+              />
+              <button type="submit">Dodaj zadanie</button>
+            </form>
+          </>
+        )}
+
+        {currentUser && currentUser.role === "guest" && (
+          <p style={{ color: "gray" }}>
+            Użytkownicy goście nie mogą dodawać nowych zadań.
+          </p>
+        )}
       </>
     ) : (
       <p>Nie znaleziono historyjki o ID {storyId}</p>

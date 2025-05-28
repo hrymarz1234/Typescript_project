@@ -17,7 +17,7 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || ""
 
 const users = [
   { id: 1, login: 'jan', password: '1234', firstName: 'Jan', lastName: 'Kowalski', role: 'admin' },
-  { id: 2, login: 'anna', password: 'abcd', firstName: 'Anna', lastName: 'Nowak', role: 'user' }
+  { id: 2, login: 'anna', password: 'abcd', firstName: 'Anna', lastName: 'Nowak', role: 'devops' }
 ]
 
 let refreshTokens = []
