@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Project, Story, Task } from "../API";
+import { useState, useEffect } from "react";
+import { Story, Task } from "../API";
 import ProjectAPI from "../API";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../context/UserContext";
@@ -10,34 +10,44 @@ function EditStory() {
   const { currentUser } = useUser();
   const navigate = useNavigate();
 
-   if (!currentUser || currentUser.role === "guest") {
-    return <p>Nie masz uprawnień do edycji tej historyjki.</p>;
-  }
-  if (!storyId) {
-    return "";
-  }
-
-  const story = projectAPI.getStoryById(parseInt(storyId));
-  if (!story) {
-    return "";
-  }
+  const [story, setStory] = useState<Story | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState<"low" | "medium" | "high">(story.priority);
-  const [status, setStatus] = useState<"todo" | "doing" | "done">(story.status);
+  const [priority, setPriority] = useState<"low" | "medium" | "high">("low");
+  const [status, setStatus] = useState<"todo" | "doing" | "done">("todo");
   const [ownerId, setOwnerId] = useState(1);
   const [createdAt, setCreatedAt] = useState("");
-  const [tasks, setTasks] = useState<Task[]>(story.tasks || []);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
+  useEffect(() => {
+    if (!storyId) return;
+
+    async function fetchStory() {
+      const id = parseInt(storyId!);
+      const result = await projectAPI.getStoryById(id);
+      if (result) {
+        setStory(result);
+        setName(result.name);
+        setDescription(result.description);
+        setPriority(result.priority);
+        setStatus(result.status);
+        setOwnerId(result.ownerId);
+        setCreatedAt(result.createdAt);
+        setTasks(result.tasks || []);
+      }
+    }
+
+    fetchStory();
+  }, [storyId]);
 
   function edit(): void {
-    if (!story) {
-      return;
-    }
+    if (!story) return;
+
     if (!name.trim()) {
       alert("Nazwa historyjki nie może być pusta");
       return;
     }
+
     const newStory: Story = {
       id: story.id,
       name,
@@ -48,39 +58,47 @@ function EditStory() {
       createdAt,
       tasks,
     };
+
     projectAPI.editStory(newStory);
     navigate("/home");
   }
+
   return (
     <div>
-      <h2>Edytuj historyjke</h2>
+      <h2>Edytuj historyjkę</h2>
       <label>Nazwa:</label>
       <input
         type="text"
-        defaultValue={story.name}
+        value={name}
         onChange={(e) => setName(e.target.value)}
       />
       <label>Opis:</label>
       <textarea
-        defaultValue={story.description}
+        value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      
       <label>Priorytet:</label>
-          <select defaultValue={story.priority} onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}>
-            <option value="low">Niski</option>
-            <option value="medium">Średni</option>
-            <option value="high">Wysoki</option>
-          </select>
-          <label>Status:</label>
-          <select defaultValue={story.status} onChange={(e) => setStatus(e.target.value as "todo" | "doing" | "done")}>
-            <option value="todo">Do zrobienia</option>
-            <option value="doing">W trakcie</option>
-            <option value="done">Zrobione</option>
-          </select>
-          <p></p>
-        <button onClick={edit}>Edytuj historyjke</button>
-      
+      <select
+        value={priority}
+        onChange={(e) =>
+          setPriority(e.target.value as "low" | "medium" | "high")
+        }
+      >
+        <option value="low">Niski</option>
+        <option value="medium">Średni</option>
+        <option value="high">Wysoki</option>
+      </select>
+      <label>Status:</label>
+      <select
+        value={status}
+        onChange={(e) => setStatus(e.target.value as "todo" | "doing" | "done")}
+      >
+        <option value="todo">Do zrobienia</option>
+        <option value="doing">W trakcie</option>
+        <option value="done">Zrobione</option>
+      </select>
+      <p></p>
+      <button onClick={edit}>Edytuj historyjkę</button>
     </div>
   );
 }

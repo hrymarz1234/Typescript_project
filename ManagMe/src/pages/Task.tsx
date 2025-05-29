@@ -17,18 +17,22 @@ const Task = () => {
   const { currentUser } = useUser();
 
   useEffect(() => {
-    if (storyId) {
-      const foundStory = api.getStoryById(Number(storyId));
-      setStory(foundStory);
-    }
+    const fetchStory = async () => {
+      if (storyId) {
+        const foundStory = await api.getStoryById(Number(storyId));
+        setStory(foundStory);
+      }
+    };
+    fetchStory();
   }, [storyId]);
 
-  const handleAddTask = (e: React.FormEvent) => {
+  const handleAddTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     if (!currentUser || currentUser.role === "guest") {
       alert("Użytkownicy goście nie mogą dodawać zadań.");
       return;
     }
-    e.preventDefault();
     if (!story) return;
 
     const newTask = {
@@ -39,17 +43,15 @@ const Task = () => {
       estimatedTime: newTaskEstimatedTime,
       status: "todo" as "todo",
       storyId: story.id,
-      assigneeId: undefined,
+      assigneeId: null,
       startedAt: "",
       finishedAt: "",
       createdAt: new Date().toISOString(),
     };
 
-    api.addTaskToStory(story.id, newTask);
-    setStory(api.getStoryById(story.id));
-
-    console.log("Dodano zadanie:", newTask);
-    console.log("Aktualna historia:", api.getStoryById(story.id));
+    await api.addTaskToStory(story.id, newTask);
+    const updatedStory = await api.getStoryById(story.id);
+    setStory(updatedStory);
 
     setNewTaskName("");
     setNewTaskDescription("");
@@ -57,10 +59,11 @@ const Task = () => {
     setNewTaskEstimatedTime("");
   };
 
-  const handleDeleteTask = (taskId: number) => {
+  const handleDeleteTask = async (taskId: number) => {
     if (!story) return;
-    api.deleteTask(story.id, taskId);
-    setStory(api.getStoryById(story.id));
+    await api.deleteTask(story.id, taskId);
+    const updatedStory = await api.getStoryById(story.id);
+    setStory(updatedStory);
   };
 
   return (

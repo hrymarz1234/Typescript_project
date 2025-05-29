@@ -10,6 +10,7 @@ function Home() {
   const { currentUser, allUsers } = useUser();
   const projectAPI = new ProjectAPI();
   const navigate = useNavigate();
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -22,7 +23,11 @@ function Home() {
   const [filterStatus, setFilterStatus] = useState<"all" | "todo" | "doing" | "done">("all");
 
   useEffect(() => {
-    setProjects(projectAPI.getAllProjects());
+    async function fetchProjects() {
+      const allProjects = await projectAPI.getAllProjects();
+      setProjects(allProjects);
+    }
+    fetchProjects();
   }, []);
 
   if (!currentUser || !alUsers) {
@@ -33,10 +38,11 @@ function Home() {
     setCurrentProject(project);
   }
 
-  function deleteProject(project: Project) {
+  async function deleteProject(project: Project) {
     if (!currentUser || currentUser.role === "guest") return;
-    projectAPI.deleteProject(project.name);
-    setProjects(projectAPI.getAllProjects());
+    await projectAPI.deleteProject(project.name);
+    const allProjects = await projectAPI.getAllProjects();
+    setProjects(allProjects);
   }
 
   function editProject(project: Project) {
@@ -47,13 +53,16 @@ function Home() {
     setCurrentStory(story);
   }
 
-  function deleteStory(story: Story) {
+  async function deleteStory(story: Story) {
     if (!currentUser || currentUser.role === "guest") return;
-    projectAPI.removeStoryById(story.id);
-    setProjects(projectAPI.getAllProjects());
-    const matched = projects.find(p => p.id === currentProject?.id);
+    await projectAPI.removeStoryById(story.id);
+    const allProjects = await projectAPI.getAllProjects();
+    setProjects(allProjects);
+    const matched = allProjects.find(p => p.id === currentProject?.id);
     if (matched) {
       setCurrentProject(matched);
+    } else {
+      setCurrentProject(null);
     }
   }
 
@@ -61,20 +70,21 @@ function Home() {
     navigate(`/editStory/${story.id}`);
   }
 
-  function createProject() {
+  async function createProject() {
     if (!currentUser || currentUser.role === "guest") return;
     if (!name.trim()) {
       alert("Nazwa projektu nie może być pusta");
       return;
     }
     const newProject: Project = { id: Date.now(), name, description, stories: [] };
-    projectAPI.addProject(newProject);
-    setProjects([...projects, newProject]);
+    await projectAPI.addProject(newProject);
+    const allProjects = await projectAPI.getAllProjects();
+    setProjects(allProjects);
     setName("");
     setDescription("");
   }
 
-  function addStoryToProject() {
+  async function addStoryToProject() {
     if (!currentUser || currentUser.role === "guest" || !currentProject) return;
 
     const newStory: Story = {
@@ -88,9 +98,10 @@ function Home() {
       tasks: [],
     };
 
-    const updatedProject = projectAPI.addStoryToProject(currentProject.name, newStory);
+    const updatedProject = await projectAPI.addStoryToProject(currentProject.name, newStory);
     if (updatedProject) {
-      setProjects(projectAPI.getAllProjects());
+      const allProjects = await projectAPI.getAllProjects();
+      setProjects(allProjects);
       setCurrentProject(updatedProject);
       setStoryName("");
       setStoryDescription("");

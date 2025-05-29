@@ -12,9 +12,12 @@ const TaskDetails = () => {
   const { currentUser } = useUser();
 
   useEffect(() => {
-    const story = api.getStoryById(Number(storyId));
-    const found = story?.tasks.find(t => t.id === Number(taskId)) || null;
-    setTask(found);
+    const fetchTask = async () => {
+      const story = await api.getStoryById(Number(storyId));
+      const found = story?.tasks.find((t: Task) => t.id === Number(taskId)) || null;
+      setTask(found);
+    };
+    fetchTask();
   }, [storyId, taskId]);
 
   const handleAssign = (userId: number) => {

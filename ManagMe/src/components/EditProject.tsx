@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Project } from "../API";
 import { useUser } from "../context/UserContext";
 import ProjectAPI from "../API";
@@ -10,49 +10,63 @@ function EditProject() {
   const { currentUser } = useUser();
   const navigate = useNavigate();
 
-    if (!currentUser || currentUser.role === "guest") {
+  const [project, setProject] = useState<Project | null>(null);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    const fetchProject = async () => {
+      const p = await projectAPI.getProjectById(parseInt(projectId));
+      if (p) {
+        setProject(p);
+        setName(p.name);
+        setDescription(p.description);
+      }
+    };
+    fetchProject();
+  }, [projectId]);
+
+  if (!currentUser || currentUser.role === "guest") {
     return <p>Nie masz uprawnień do edycji tego projektu.</p>;
   }
 
-  if (!projectId) {
-    return "";
+  if (!project) {
+    return <p>Ładowanie projektu...</p>;
   }
 
-  const project = projectAPI.getProjectById(parseInt(projectId));
-  if (!project) {
-    return "";
-  }
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
   function edit(): void {
-    if (!project) {
-      return;
-    }
+    
+     if (!project) {
+    return;
+  }
     if (!name.trim()) {
       alert("Nazwa projektu nie może być pusta");
       return;
     }
     const newProject: Project = {
-      id: project.id,
+      ...project,
       name,
       description,
-      stories: [],
+      stories: project.stories || [],
     };
     projectAPI.updateProject(newProject);
     navigate("/home");
   }
+
   return (
     <div>
       <h2>Edytuj projekt</h2>
       <label>Nazwa:</label>
       <input
         type="text"
-        defaultValue={project.name}
+        value={name}
         onChange={(e) => setName(e.target.value)}
       />
       <label>Opis:</label>
       <textarea
-        defaultValue={project.description}
+        value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
       <p></p>

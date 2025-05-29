@@ -9,10 +9,14 @@ const KanbanPage = () => {
   const api = new ProjectAPI();
 
   useEffect(() => {
-    if (storyId) {
-      const fetchedStory = api.getStoryById(Number(storyId));
-      setStory(fetchedStory);
-    }
+    const fetchStory = async () => {
+      if (storyId) {
+        const fetchedStory = await api.getStoryById(Number(storyId));
+        setStory(fetchedStory);
+      }
+    };
+
+    fetchStory();
   }, [storyId]);
 
   if (!story) return <p>Ładowanie lub nie znaleziono historii...</p>;

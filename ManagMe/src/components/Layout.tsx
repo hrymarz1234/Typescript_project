@@ -8,15 +8,14 @@ const Layout = () => {
 
   return (
     <div
-      style={{ backgroundColor: darkMode ? '#111827' : '#ffffff' }}
-      className={`min-h-screen ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}
+      className={`min-h-screen ${darkMode ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}
     >
       <header
         className={`flex justify-between items-center p-4 border-b ${
           darkMode ? 'border-gray-700' : 'border-gray-300'
         }`}
       >
-        <div>
+        <div className={darkMode ? 'text-gray-100' : 'text-gray-900'}>
           {currentUser ? (
             <>Zalogowany: {currentUser.firstName} {currentUser.lastName}</>
           ) : (
@@ -24,15 +23,20 @@ const Layout = () => {
           )}
         </div>
         <button
-          onClick={() => setDarkMode(!darkMode)}
-          className={`px-3 py-1 border rounded ${
-            darkMode ? 'border-gray-400' : 'border-gray-500'
-          }`}
-        >
-          {darkMode ? 'Tryb jasny' : 'Tryb ciemny'}
-        </button>
+            onClick={() => setDarkMode(!darkMode)}
+            className={`px-3 py-1 border rounded transition-colors ${
+              darkMode
+                ? 'bg-transparent text-gray-100 border-gray-400'
+                : 'bg-gray-200 text-black border-gray-400'
+            }`}
+          >
+            {darkMode ? 'Tryb jasny' : 'Tryb ciemny'}
+          </button>
       </header>
-      <main className="p-4">
+
+      <main
+        className={`p-4 ${!darkMode ? 'button-light-mode' : ''}`}
+      >
         <Outlet />
       </main>
     </div>
