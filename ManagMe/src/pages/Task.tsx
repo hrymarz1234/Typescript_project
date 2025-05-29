@@ -103,7 +103,10 @@ const Task = () => {
           {currentUser && currentUser.role !== "guest" && (
             <>
               <h3>Dodaj nowe zadanie</h3>
-              <form onSubmit={handleAddTask}>
+              <form
+                onSubmit={handleAddTask}
+                style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "center" }}
+              >
                 <input
                   type="text"
                   placeholder="Nazwa zadania"

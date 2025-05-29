@@ -17,7 +17,7 @@ function Login() {
   useEffect(() => {
     if (window.google) {
       window.google.accounts.id.initialize({
-        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+        client_id: "",
         callback: handleGoogleResponse,
       });
 
@@ -105,5 +105,6 @@ const handleGoogleResponse = async (response: any) => {
     </>
   );
 }
+
 
 export default Login;

@@ -150,8 +150,8 @@ function Home() {
           </div>
 
           {currentUser.role !== "guest" && (
-            <div>
-              <h2>Dodaj projekt</h2>
+            <div style={{ display: "flex", flexDirection: "column",gap: "8px",justifyContent: "center",alignItems: "center"}}>
+              <h2 className="pt-2">Dodaj projekt</h2>
               <label>Nazwa:</label>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
               <label>Opis:</label>
@@ -163,7 +163,7 @@ function Home() {
       )}
 
       {currentProject && (
-        <div>
+        <div style={{ display: "flex", flexDirection: "column",gap: "8px",justifyContent: "center",alignItems: "center"}}>
           <h2>Aktualny projekt: {currentProject.name}</h2>
 
           {currentUser.role !== "guest" && (
