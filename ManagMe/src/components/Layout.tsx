@@ -8,7 +8,7 @@ const Layout = () => {
 
   return (
     <div
-      className={`min-h-screen ${darkMode ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}
+      className={`min-h-screen w-full ${darkMode ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}
     >
       <header
         className={`flex justify-between items-center p-4 border-b ${
@@ -23,11 +23,12 @@ const Layout = () => {
           )}
         </div>
         <button
+            type ="submit"
             onClick={() => setDarkMode(!darkMode)}
             className={`px-3 py-1 border rounded transition-colors ${
               darkMode
-                ? 'bg-transparent text-gray-100 border-gray-400'
-                : 'bg-gray-200 text-black border-gray-400'
+                ? 'bg-red-500 text-gray-100 border-gray-400'
+                : 'switch'
             }`}
           >
             {darkMode ? 'Tryb jasny' : 'Tryb ciemny'}

@@ -116,10 +116,10 @@ function Home() {
 
       {!currentProject && (
         <>
-          <h3>Lista użytkowników:</h3>
+          <h3 className="py-2">Lista użytkowników:</h3>
           <ul>
             {alUsers.map((user) => (
-              <li key={user.id}>
+              <li className="pb-2" key={user.id}>
                 {user.firstName} {user.lastName} - {user.role}
               </li>
             ))}

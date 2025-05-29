@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -14,7 +15,10 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+input{
+  border: 1px solid gray;
+  margin: 0px 3px;
+}
 a {
   font-weight: 500;
   color: #646cff;
@@ -28,7 +32,7 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
+  min-width: 100vw;
   min-height: 100vh;
 }
 
@@ -43,7 +47,13 @@ h1 {
   padding: 0.25rem 0.75rem;
   border-radius: 0.375rem;
 }
-
+.switch {
+  background-color: #e5e7eb; 
+  color: #000000;
+  border: 1px solid #9ca3af; 
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+}
 button {
   border-radius: 8px;
   border: 1px solid transparent;

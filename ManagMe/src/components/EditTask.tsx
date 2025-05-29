@@ -17,18 +17,22 @@ const EditTask = () => {
   const [estimatedTime, setEstimatedTime] = useState("");
 
   useEffect(() => {
-    if (storyId && taskId) {
-      const story = api.getStoryById(Number(storyId));
-      const foundTask = story?.tasks.find(t => t.id === Number(taskId)) || null;
-      if (foundTask) {
-        setTask(foundTask);
-        setName(foundTask.name);
-        setDescription(foundTask.description);
-        setPriority(foundTask.priority);
-        setStatus(foundTask.status);
-        setEstimatedTime(foundTask.estimatedTime);
+    const fetchTask = async () => {
+      if (storyId && taskId) {
+        const story = await api.getStoryById(Number(storyId));
+        const foundTask = story?.tasks.find((t: TaskType) => t.id === Number(taskId)) || null;
+        if (foundTask) {
+          setTask(foundTask);
+          setName(foundTask.name);
+          setDescription(foundTask.description);
+          setPriority(foundTask.priority);
+          setStatus(foundTask.status);
+          setEstimatedTime(foundTask.estimatedTime);
+        }
       }
-    }
+    };
+
+    fetchTask();
   }, [storyId, taskId]);
 
   if (!currentUser || currentUser.role === "guest") {
@@ -49,7 +53,6 @@ const EditTask = () => {
     if (status === "doing" && !task.startedAt) {
       updatedFields.startedAt = new Date().toISOString();
     }
-
 
     if (status === "done" && !("endedAt" in task)) {
       updatedFields.finishedAt = new Date().toISOString();

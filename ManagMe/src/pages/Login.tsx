@@ -17,7 +17,7 @@ function Login() {
   useEffect(() => {
     if (window.google) {
       window.google.accounts.id.initialize({
-        client_id: "",
+        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
         callback: handleGoogleResponse,
       });
 
